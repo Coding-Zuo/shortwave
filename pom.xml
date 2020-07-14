@@ -46,6 +46,19 @@
             <artifactId>fastjson</artifactId>
             <version>1.2.72</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>com.corundumstudio.socketio</groupId>
+            <artifactId>netty-socketio</artifactId>
+            <version>1.7.18</version>
+        </dependency>
+
     </dependencies>
 
     <build>
