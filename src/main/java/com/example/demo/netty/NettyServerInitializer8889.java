@@ -1,6 +1,7 @@
 package com.example.demo.netty;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -17,12 +18,20 @@ import java.nio.charset.Charset;
  * @date 2020.07.17 13:24
  */
 @Slf4j
+//@ChannelHandler.Sharable
 public class NettyServerInitializer8889 extends ChannelInitializer<NioSocketChannel> {
 
     @Override
     protected void initChannel(NioSocketChannel ch) {
         ch.pipeline().addLast(new StringDecoder());//Decode:解码，将收到的ByteBuf解码为String
         ch.pipeline().addLast(new SimpleChannelInboundHandler<String>() {
+            @Override
+            public void channelActive(ChannelHandlerContext ctx) throws Exception {
+                super.channelActive(ctx);
+                log.info("通道激活");
+                log.info(String.valueOf(ctx.channel().localAddress()));
+            }
+
             @Override
             protected void channelRead0(ChannelHandlerContext ctx, String msg) {
                 // 打印客户端发送的消息
