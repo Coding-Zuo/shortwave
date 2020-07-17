@@ -53,8 +53,8 @@ public class NettyServer {
 
     public void start() throws InterruptedException {
         log.info("通道配置");
-        this.channelFuture = serverBootstrap.bind(nettyServer.port);//绑定端口，用作服务端的端口
-        this.channelFuture8889 = serverBootstrap.bind(nettyServer.port1);
+        this.channelFuture = serverBootstrap.bind(nettyServer.port).sync();//绑定端口，用作服务端的端口
+        this.channelFuture8889 = serverBootstrap.bind(nettyServer.port1).sync();
         log.info("netty server 启动完毕,启动端口为：" + nettyServer.port);
         log.info("netty server 启动完毕,启动端口为：" + nettyServer.port1);
     }
