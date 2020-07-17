@@ -24,8 +24,10 @@ public class NettyServer {
     private EventLoopGroup subGroup;
     private ServerBootstrap serverBootstrap;
     private ChannelFuture channelFuture;
+    private ChannelFuture channelFuture8889;
 
     private int port = 8888;
+    private int port1 = 8889;
 
     @PostConstruct
     public void init() {
@@ -49,9 +51,11 @@ public class NettyServer {
                 .childHandler(new NettyServerInitializer());
     }
 
-    public void start() {
+    public void start() throws InterruptedException {
         log.info("通道配置");
         this.channelFuture = serverBootstrap.bind(nettyServer.port);//绑定端口，用作服务端的端口
+        this.channelFuture8889 = serverBootstrap.bind(nettyServer.port1);
         log.info("netty server 启动完毕,启动端口为：" + nettyServer.port);
+        log.info("netty server 启动完毕,启动端口为：" + nettyServer.port1);
     }
 }
