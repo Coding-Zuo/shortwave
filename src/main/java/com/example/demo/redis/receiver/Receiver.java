@@ -24,7 +24,7 @@ public class Receiver {
     public void receiveMessage(String message) {
         System.out.println("收到的消息为：" + message);
         //TODO 处理message区分设备
-        Channel channel= SessionUtil.getChannel(message);
+        Channel channel= SessionUtil.getChannel("/192.168.31.144:55556");
         byte[] bytes = "我是服务端，我在向客户端发送数据".getBytes(Charset.forName("utf-8"));
         ByteBuf buffer = channel.alloc().buffer();
         buffer.writeBytes(bytes);
