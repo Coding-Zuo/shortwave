@@ -1,6 +1,7 @@
 package com.example.demo;
 
 import com.example.demo.netty.NettyServer;
+import com.example.demo.netty.WebSocketChatServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -22,9 +23,12 @@ public class DemoApplication implements CommandLineRunner {
     @Autowired
     private NettyServer nettyServer;
 
+    @Autowired
+    private WebSocketChatServer webSocketChatServer;
+
     @Override
     public void run(String... args) throws Exception {
-        this.nettyServer.start();
+        this.webSocketChatServer.start();
     }
 
 
