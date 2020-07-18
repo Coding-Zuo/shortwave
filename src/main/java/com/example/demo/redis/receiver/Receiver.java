@@ -1,7 +1,12 @@
-package com.example.demo.receiver;
+package com.example.demo.redis.receiver;
 
+import com.example.demo.netty.attr.SessionUtil;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+
+import java.nio.charset.Charset;
 
 /**
  * @Description redis 客户端
@@ -17,7 +22,12 @@ public class Receiver {
      * @param message
      */
     public void receiveMessage(String message) {
-        //log.info("Received <" + message + ">");
         System.out.println("收到的消息为：" + message);
+        //TODO 处理message区分设备
+        Channel channel= SessionUtil.getChannel(message);
+        byte[] bytes = "我是服务端，我在向客户端发送数据".getBytes(Charset.forName("utf-8"));
+        ByteBuf buffer = channel.alloc().buffer();
+        buffer.writeBytes(bytes);
+        channel.writeAndFlush(buffer);
     }
 }
