@@ -2,6 +2,7 @@ package com.example.demo.netty.handler;
 
 import com.example.demo.netty.attr.Session;
 import com.example.demo.netty.attr.SessionUtil;
+import com.example.demo.util.MsgToByte;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
@@ -46,7 +47,7 @@ public class QTCommandHandler extends SimpleChannelInboundHandler<String> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, String s) throws Exception {
-        String arr[] = s.split(" ");
+        String arr[] = MsgToByte.toBinary(s).split(" ");
         String shebei = arr[1];
 
         ChannelGroup channelGroup = new DefaultChannelGroup(ctx.executor());
