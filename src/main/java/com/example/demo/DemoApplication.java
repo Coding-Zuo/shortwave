@@ -8,9 +8,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootApplication
 @ComponentScan(basePackages = {"com.example.demo.netty","com.example.demo","com.example.demo.redis.receiver"})
+@RestController
 public class DemoApplication implements CommandLineRunner {
 
     public static void main(String[] args) {
