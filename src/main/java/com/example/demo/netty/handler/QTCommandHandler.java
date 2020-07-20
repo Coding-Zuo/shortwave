@@ -21,40 +21,39 @@ import org.msgpack.MessagePack;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @ChannelHandler.Sharable
 public class QTCommandHandler extends SimpleChannelInboundHandler<Object> {
 
-
+    public final String qtIp = "/192.168.31.166";
     public static final QTCommandHandler INSTANCE = new QTCommandHandler();
-    List<String> shebeiList = new ArrayList<>();
+    Map<String, String> shebeiMap = new HashMap<String, String>() {{
+        put("设备1", "/192.168.31.185");
+        put("设备2", "/192.168.31.184");
+    }};
+    Set<String> shebeiSet = new HashSet<String>() {{
+        add("test1");
+        add("test2");
+    }};
     private WebSocketServerHandshaker socketServerHandShaker;
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         super.channelActive(ctx);
         InetSocketAddress inteSocket = (InetSocketAddress) ctx.channel().remoteAddress();
-        SocketAddress socketAddress=ctx.channel().localAddress();
-        String remotePort=inteSocket.toString().split(":")[1];
-        String remoteIp=inteSocket.toString().split(":")[0];
-        String id = inteSocket.toString();
-        Session session;
-        if(remotePort.equals("8888")){
-            session = new Session(id, "qt");
-        }else{
-            session = new Session(remoteIp, remoteIp);
-        }
-
+        String remoteIp = inteSocket.toString().split(":")[0];
+        Session session = new Session(remoteIp, remoteIp);
         SessionUtil.bindSession(session, ctx.channel());
-        ChannelGroup channelGroup = new DefaultChannelGroup(ctx.executor());;
+        ChannelGroup channelGroup = new DefaultChannelGroup(ctx.executor());
         log.info("地址" + remoteIp + "加入");
         channelGroup.add(ctx.channel());
 //        SessionUtil.bindChannelGroup("1",channelGroup);
-        shebeiList.add(remoteIp);
+        if (!qtIp.equals(remoteIp)) { //判断是否是arm
+            shebeiMap.put("设备" + shebeiMap.size() + 1, remoteIp);
+            shebeiSet.add(remoteIp);
+        }
     }
 
     @Override
@@ -70,8 +69,13 @@ public class QTCommandHandler extends SimpleChannelInboundHandler<Object> {
 //        byte[] bytes = "我是服务端，我在向客户端发送数据".getBytes(Charset.forName("utf-8"));
 //        ByteBuf buffer = channel2.alloc().buffer();
 //        buffer.writeBytes(bytes);
-        WebSocketFrame webSocketFrame= (WebSocketFrame) msg;
-        handlerWebSocketFrame(ctx,webSocketFrame);
+        WebSocketFrame webSocketFrame = (WebSocketFrame) msg;
+        String remoteIp = ctx.channel().remoteAddress().toString().split(":")[0];
+        if (remoteIp.equals(qtIp)) {
+            handlerWebSocketFrame(ctx, webSocketFrame, true, remoteIp);
+        } else {
+            handlerWebSocketFrame(ctx, webSocketFrame, false, remoteIp);
+        }
 //        channel2.writeAndFlush(new TextWebSocketFrame("我是服务器,我收到你的消息为:" + content));
     }
 
@@ -81,29 +85,29 @@ public class QTCommandHandler extends SimpleChannelInboundHandler<Object> {
      * @param channelHandlerContext channelHandlerContext
      * @param frame                 webSocketFrame
      */
-    private void handlerWebSocketFrame(ChannelHandlerContext channelHandlerContext, WebSocketFrame frame) throws Exception {
+    private void handlerWebSocketFrame(ChannelHandlerContext channelHandlerContext, WebSocketFrame frame, boolean isQt, String remoteIp) throws Exception {
 //        Channel channel = channelHandlerContext.channel();
-        Channel channel=SessionUtil.getChannel("/192.168.31.166");
 //        Channel channel=SessionUtil.getChannelGroup("/192.168.31.166").;
         // region 判断是否是关闭链路的指令
-        if (frame instanceof CloseWebSocketFrame) {
-            log.info("├ 关闭与客户端[{}]链接", channel.remoteAddress());
-            socketServerHandShaker.close(channel, (CloseWebSocketFrame) frame.retain());
-            return;
-        }
+//        if (frame instanceof CloseWebSocketFrame) {
+//            log.info("├ 关闭与客户端[{}]链接", channel.remoteAddress());
+//            socketServerHandShaker.close(channel, (CloseWebSocketFrame) frame.retain());
+//            return;
+//        }
         // endregion
         // region 判断是否是ping消息
-        if (frame instanceof PingWebSocketFrame) {
-            log.info("├ [Ping消息]");
-            channel.write(new PongWebSocketFrame(frame.content().retain()));
-            return;
-        }
+//        if (frame instanceof PingWebSocketFrame) {
+//            log.info("├ [Ping消息]");
+//            channel.write(new PongWebSocketFrame(frame.content().retain()));
+//            return;
+//        }
         // endregion
         // region 纯文本消息
         if (frame instanceof TextWebSocketFrame) {
+            Channel channel = SessionUtil.getChannel(qtIp);
             String text = ((TextWebSocketFrame) frame).text();
             log.info("├ [{} 接收到客户端的消息]: {}", new Date(), text);
-            channel.writeAndFlush(new TextWebSocketFrame(new Date() + " 服务器将你发的消息原样返回：" + text));
+            channel.writeAndFlush(new TextWebSocketFrame(text));
         }
         // endregion
         // region 二进制消息 此处使用了MessagePack编解码方式
@@ -111,13 +115,29 @@ public class QTCommandHandler extends SimpleChannelInboundHandler<Object> {
             BinaryWebSocketFrame binaryWebSocketFrame = (BinaryWebSocketFrame) frame;
             ByteBuf content = binaryWebSocketFrame.content();
             byte[] bt3 = new byte[content.capacity()];
-            for(int i=0;i<content.capacity();i++){
-                byte b=content.getByte(i);
-                bt3[i]=b;
+            int toArmFlag = 0;
+            for (int i = 0; i < content.capacity(); i++) {
+                byte b = content.getByte(i);
+                if (i == 0 && b == 1 && isQt) {
+                    toArmFlag = 1;
+                } else if (i == 0 && b == 2 && isQt) {
+                    toArmFlag = 2;
+                }
+                bt3[i] = b;
+            }
+            Channel channel;
+            if (toArmFlag == 0) {//arm 传给 qt
+                channel = SessionUtil.getChannel(qtIp);
+            } else if (toArmFlag == 1) { //qt给arm1
+                String armIp = shebeiMap.get("设备1");
+                channel = SessionUtil.getChannel(armIp);
+            } else {
+                String armIp = shebeiMap.get("设备2");
+                channel = SessionUtil.getChannel(armIp);
             }
             content.markReaderIndex();
-            int flag = content.readInt();
-            log.info("标志位:[{}]", flag);
+//            int flag = content.readInt();
+//            log.info("标志位:[{}]", flag);
             content.resetReaderIndex();
 
             ByteBuf byteBuf = Unpooled.directBuffer(binaryWebSocketFrame.content().capacity());
