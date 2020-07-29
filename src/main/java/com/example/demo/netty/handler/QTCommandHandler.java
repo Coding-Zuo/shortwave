@@ -30,7 +30,7 @@ public class QTCommandHandler extends SimpleChannelInboundHandler<Object> {
     public final String qtIp = "/192.168.31.166";
     public static final QTCommandHandler INSTANCE = new QTCommandHandler();
     Map<String, String> shebeiMap = new HashMap<String, String>() {{
-        put("设备1", "/192.168.31.185");
+        put("设备1", "/192.168.31.189");
         put("设备2", "/192.168.31.184");
     }};
     Set<String> shebeiSet = new HashSet<String>() {{
