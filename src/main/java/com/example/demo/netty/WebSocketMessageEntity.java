@@ -10,8 +10,6 @@ import java.io.Serializable;
 
 /**
  * <p>
- * create by 叶云轩 at 2018/5/18-下午4:12
- * contact by tdg_yyx@foxmail.com
  */
 @Message
 @Data

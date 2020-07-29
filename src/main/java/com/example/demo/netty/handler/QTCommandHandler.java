@@ -187,27 +187,27 @@ public class QTCommandHandler extends SimpleChannelInboundHandler<Object> {
      * @param channelHandlerContext channelHandlerContext
      * @param req                   请求
      */
-    private void handlerHttpRequest(ChannelHandlerContext channelHandlerContext, FullHttpRequest req) {
-        // 构造握手响应返回，本机测试
-        WebSocketServerHandshakerFactory wsFactory
-                = new WebSocketServerHandshakerFactory("/dunabo", null, false);
-        // region 从连接路径中截取连接用户名
-        String uri = req.uri();
-        int i = uri.lastIndexOf("/");
-        String userName = uri.substring(i + 1, uri.length());
-        // endregion
-        Channel connectChannel = channelHandlerContext.channel();
-        // 加入在线用户
-        WebSocketUsers.put(userName, connectChannel);
-        socketServerHandShaker = wsFactory.newHandshaker(req);
-        if (socketServerHandShaker == null) {
-            // 发送版本错误
-            WebSocketServerHandshakerFactory.sendUnsupportedVersionResponse(connectChannel);
-        } else {
-            // 握手响应
-            socketServerHandShaker.handshake(connectChannel, req);
-        }
-    }
+//    private void handlerHttpRequest(ChannelHandlerContext channelHandlerContext, FullHttpRequest req) {
+//        // 构造握手响应返回，本机测试
+//        WebSocketServerHandshakerFactory wsFactory
+//                = new WebSocketServerHandshakerFactory("/dunabo", null, false);
+//        // region 从连接路径中截取连接用户名
+//        String uri = req.uri();
+//        int i = uri.lastIndexOf("/");
+//        String userName = uri.substring(i + 1, uri.length());
+//        // endregion
+//        Channel connectChannel = channelHandlerContext.channel();
+//        // 加入在线用户
+//        WebSocketUsers.put(userName, connectChannel);
+//        socketServerHandShaker = wsFactory.newHandshaker(req);
+//        if (socketServerHandShaker == null) {
+//            // 发送版本错误
+//            WebSocketServerHandshakerFactory.sendUnsupportedVersionResponse(connectChannel);
+//        } else {
+//            // 握手响应
+//            socketServerHandShaker.handshake(connectChannel, req);
+//        }
+//    }
 
 //    @Override
 //    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {

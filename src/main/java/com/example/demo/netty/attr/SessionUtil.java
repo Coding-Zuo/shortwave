@@ -39,13 +39,13 @@ public class SessionUtil {
      *
      * @param channel 连接
      */
-    public static void unBindSession(Channel channel) {
-        if (hasLogin(channel)) {
-            System.out.println("移除【userId:channel】映射 " + getSession(channel).getId() + ":" + channel.toString());
-            userIdChannelMap.remove(getSession(channel).getId());
-            channel.attr(Attributes.SESSION).set(null);
-        }
-    }
+//    public static void unBindSession(Channel channel) {
+//        if (hasLogin(channel)) {
+//            System.out.println("移除【userId:channel】映射 " + getSession(channel).getId() + ":" + channel.toString());
+//            userIdChannelMap.remove(getSession(channel).getId());
+//            channel.attr(Attributes.SESSION).set(null);
+//        }
+//    }
 
     /**
      * 根据连接判断用户是否已经登录
@@ -53,9 +53,9 @@ public class SessionUtil {
      * @param channel 连接
      * @return true 则表示已登录
      */
-    public static boolean hasLogin(Channel channel) {
-        return channel.hasAttr(Attributes.SESSION);
-    }
+//    public static boolean hasLogin(Channel channel) {
+//        return channel.hasAttr(Attributes.SESSION);
+//    }
 
     /**
      * 根据连接获取用户会话信息
