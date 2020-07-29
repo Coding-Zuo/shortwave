@@ -15,7 +15,7 @@ import ac.nci.xt4b.messageClient.impl.ClusterMqClient;
  */
 public class ForwardTest {
     public static void main(String[] args) throws Exception {
-        final String broker = "192.168.199.128:9876";
+        final String broker = "127.0.0.1:9876";
         Client messageClient = new ClusterMqClient();
         messageClient.connect(broker);
 
