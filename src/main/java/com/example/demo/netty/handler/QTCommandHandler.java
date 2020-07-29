@@ -111,30 +111,54 @@ public class QTCommandHandler extends SimpleChannelInboundHandler<Object> {
         }
         // endregion
         // region 二进制消息 此处使用了MessagePack编解码方式
-        if (frame instanceof BinaryWebSocketFrame) {
-            BinaryWebSocketFrame binaryWebSocketFrame = (BinaryWebSocketFrame) frame;
-            ByteBuf content = binaryWebSocketFrame.content();
-            byte[] bt3 = new byte[content.capacity()];
-            int toArmFlag = 0;
+
+        if (frame instanceof BinaryWebSocketFrame) {//frame如果是二进制的会进入下面
+            BinaryWebSocketFrame binaryWebSocketFrame = (BinaryWebSocketFrame) frame;//对frame强转
+            ByteBuf content = binaryWebSocketFrame.content();//返回byteBuf数据
+            byte[] bt3 = new byte[content.capacity()];//content.capacity()：返回此缓冲区包含的的字节数，new一个byte数组，长度就是缓冲区的字节数
+            String toArmFlag = "";//用来存储获取到的协议
             for (int i = 0; i < content.capacity(); i++) {
-                byte b = content.getByte(i);
-                if (i == 0 && b == 1 && isQt) {
-                    toArmFlag = 1;
-                } else if (i == 0 && b == 2 && isQt) {
-                    toArmFlag = 2;
+                byte b = content.getByte(i);//返回当前索引的字节
+                /**
+                 * 判断第一个字节（设备号）
+                 * 判断完第一个字节后，判断第二个字节（消息类型）
+                 * 根据第二个字节的判断结果，判断第三个字节，如果第二个字节是全景数据，则判断第三个字节，如果第二个字节非全景数据，则不再判断第三个字节的内容
+                 *
+                 * 模拟new一个byte数组，长度是3，
+                 * 设置一个数组，模拟取出当前索引的数组   
+                 */
+                if (i == 0 && b == 1) {//当字节是1的时候，定义toArmFlag为1
+                    toArmFlag = "1";
+                    //第一个字段是1（设备1）
+                } else if (i == 0 && b == 2) {
+                    toArmFlag = "2";
+                    //第一个字段是2（设备2）
+                } else if (i == 1 && b == 1){
+                    //第二个字段是1
+                    toArmFlag = toArmFlag + "1";
+                } else if(toArmFlag.length() == 2 && toArmFlag.substring(1,2).equals("1")){
+                    //第二个字段必须是1，并且字符串的长度必须是2
+                    toArmFlag = toArmFlag + "2";
+                    if (i == 2 && b == 0){
+                        //第三个字段是0
+                        toArmFlag = toArmFlag + "0";
+                    } else if (i == 2 && b == 1){
+                        //第三个字段是1
+                        toArmFlag = toArmFlag + "1";
+                    }
                 }
                 bt3[i] = b;
             }
-            Channel channel;
-            if (toArmFlag == 0) {//arm 传给 qt
-                channel = SessionUtil.getChannel(qtIp);
-            } else if (toArmFlag == 1) { //qt给arm1
-                String armIp = shebeiMap.get("设备1");
-                channel = SessionUtil.getChannel(armIp);
-            } else {
-                String armIp = shebeiMap.get("设备2");
-                channel = SessionUtil.getChannel(armIp);
-            }
+            Channel channel = SessionUtil.getChannel(qtIp);;
+//            if (toArmFlag == 0) {//arm 传给 qt
+//                channel = SessionUtil.getChannel(qtIp);
+//            } else if (toArmFlag == 1) { //qt给arm1
+//                String armIp = shebeiMap.get("设备1");
+//                channel = SessionUtil.getChannel(armIp);
+//            } else {
+//                String armIp = shebeiMap.get("设备2");
+//                channel = SessionUtil.getChannel(armIp);
+//            }
             content.markReaderIndex();
 //            int flag = content.readInt();
 //            log.info("标志位:[{}]", flag);
