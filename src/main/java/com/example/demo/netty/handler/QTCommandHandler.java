@@ -1,5 +1,10 @@
 package com.example.demo.netty.handler;
 
+import ac.nci.xt4b.messageClient.Body;
+import ac.nci.xt4b.messageClient.Client;
+import ac.nci.xt4b.messageClient.Topic;
+import ac.nci.xt4b.messageClient.UserMsg;
+import ac.nci.xt4b.messageClient.impl.ClusterMqClient;
 import com.example.demo.netty.WebSocketMessageEntity;
 import com.example.demo.netty.WebSocketUsers;
 import com.example.demo.netty.attr.Session;
@@ -149,7 +154,93 @@ public class QTCommandHandler extends SimpleChannelInboundHandler<Object> {
                 }
                 bt3[i] = b;
             }
-            Channel channel = SessionUtil.getChannel(qtIp);;
+            log.info("获取到的协议bt3：" + bt3.toString());
+            // 连接消息服务器
+            //final String broker = "192.168.1.226:9876";
+            final String broker = "192.168.199.128:9876";
+            Client messageClient = new ClusterMqClient();
+            messageClient.connect(broker);
+
+            String msgType = "";
+
+            if (toArmFlag.substring(0, 1).equals("1")){
+                //设备1
+                log.info("设备1");
+                if (toArmFlag.substring(1, 2).equals("0")){
+                    //停止
+                    //设备1停止：2000
+                    msgType = "2000";
+                    log.info("配置：2000");
+                } else if (toArmFlag.substring(1, 2).equals("1")){
+                    //全景数据（启动）
+                    if (toArmFlag.substring(2, 3).equals("0")){
+                        //如果是全景数据，还需要判断第三位是信号（0）还是噪声（1）
+                        //设备1启动信号：2100
+                        msgType = "2100";
+                        log.info("配置：2100");
+                    } else if(toArmFlag.substring(2, 3).equals("1")){
+                        //如果是全景数据，还需要判断第三位是信号（0）还是噪声（1）
+                        //设备1启动噪声：2101
+                        msgType = "2101";
+                        log.info("配置：2101");
+                    }
+                } else if(toArmFlag.substring(1, 2).equals("2")){
+                    //自动侦测
+                    //设备1自动侦测：2200
+                    msgType = "2200";
+                    log.info("配置：2200");
+                } else if(toArmFlag.substring(1, 2).equals("3")){
+                    //定位信息
+                    //设备1定位信息：2300
+                    msgType = "2300";
+                    log.info("配置：2300");
+                }
+            } else if (toArmFlag.substring(0, 1).equals("2")){
+                //设备2
+                log.info("设备2");
+                if (toArmFlag.substring(1, 2).equals("0")){
+                    //停止
+                    //设备2停止：2010
+                    msgType = "2010";
+                    log.info("配置：2010");
+                } else if (toArmFlag.substring(1, 2).equals("1")){
+                    //全景数据（启动）
+                    if (toArmFlag.substring(2, 3).equals("0")){
+                        //如果是全景数据，还需要判断第三位是信号（0）还是噪声（1）
+                        //设备2启动信号：2110
+                        msgType = "2110";
+                        log.info("配置：2110");
+                    } else if(toArmFlag.substring(2, 3).equals("1")){
+                        //如果是全景数据，还需要判断第三位是信号（0）还是噪声（1）
+                        //设备2启动噪声：2111
+                        msgType = "2111";
+                        log.info("配置：2111");
+                    }
+                } else if(toArmFlag.substring(1, 2).equals("2")){
+                    //自动侦测
+                    //设备2自动侦测：2210
+                    msgType = "2210";
+                    log.info("配置：2210");
+                } else if(toArmFlag.substring(1, 2).equals("3")){
+                    //定位信息
+                    //设备2定位信息：2310
+                    msgType = "2310";
+                    log.info("配置：2310");
+                }
+            }
+
+            // 发送消息，消息大类为2010，消息小类通过指定协议动态指定小类编码，消息群发，消息体为指定协议
+            Topic sendTopic_2010_msgType = new Topic("2010", msgType);
+            log.info("msgType：" + msgType);
+            UserMsg msg_2010 = new UserMsg();
+            msg_2010.setTopic(sendTopic_2010_msgType);
+            msg_2010.setBody(new Body(bt3));
+            messageClient.sendMessage(msg_2010);
+            log.info("发送数据");
+
+
+
+            Channel channel = SessionUtil.getChannel(qtIp);
 //            if (toArmFlag == 0) {//arm 传给 qt
 //                channel = SessionUtil.getChannel(qtIp);
 //            } else if (toArmFlag == 1) { //qt给arm1
