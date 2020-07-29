@@ -10,14 +10,14 @@ public class ReceiveTest {
 
         // 连接消息服务器
         //final String broker = "192.168.1.226:9876";
-        final String broker = "192.168.199.128:9876";
+        final String broker = "127.0.0.1:9876";
         Client messageClient = new ClusterMqClient();
         messageClient.connect(broker);
 
         // 订阅消息，消息大类为2005，消息小类为2009，消息客户端ID为5554
-        Topic registerTopic_2005_2009 = new Topic("2006", "2009", "5556");
+        Topic registerTopic_2010_3000 = new Topic("2010", "3000");
         try {
-            messageClient.register(registerTopic_2005_2009, true, userMsg -> System.out.println(new String(userMsg.getBody().getMsgBody())));
+            messageClient.register(registerTopic_2010_3000, true, userMsg -> System.out.println(new String(userMsg.getBody().getMsgBody())));
             Thread.sleep(1000);
         } catch (Exception e) {
             e.printStackTrace();

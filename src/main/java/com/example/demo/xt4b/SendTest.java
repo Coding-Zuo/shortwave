@@ -12,7 +12,7 @@ public class SendTest {
 
         // 连接消息服务器
         //final String broker = "192.168.1.226:9876";
-        final String broker = "192.168.199.128:9876";
+        final String broker = "127.0.0.1:9876";
         Client messageClient = new ClusterMqClient();
         messageClient.connect(broker);
 
