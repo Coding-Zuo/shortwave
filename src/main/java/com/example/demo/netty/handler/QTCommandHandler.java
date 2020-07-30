@@ -5,11 +5,9 @@ import ac.nci.xt4b.messageClient.Client;
 import ac.nci.xt4b.messageClient.Topic;
 import ac.nci.xt4b.messageClient.UserMsg;
 import ac.nci.xt4b.messageClient.impl.ClusterMqClient;
-import com.example.demo.netty.WebSocketMessageEntity;
-import com.example.demo.netty.WebSocketUsers;
 import com.example.demo.netty.attr.Session;
 import com.example.demo.netty.attr.SessionUtil;
-import com.example.demo.util.MsgToByte;
+import com.example.demo.xt4b.UpForwardListener;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
@@ -18,14 +16,13 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
-import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.handler.codec.http.websocketx.*;
+import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
+import io.netty.handler.codec.http.websocketx.WebSocketFrame;
+import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
 import lombok.extern.slf4j.Slf4j;
-import org.msgpack.MessagePack;
 
 import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-import java.nio.charset.Charset;
 import java.util.*;
 
 @Slf4j
@@ -63,17 +60,6 @@ public class QTCommandHandler extends SimpleChannelInboundHandler<Object> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
-//        ChannelGroup channelGroup = SessionUtil.getChannelGroup("1");
-//        for (Channel channel : channelGroup) {
-//            System.out.println(channel.toString());
-//        }
-
-//        if (arr[1].equals(0)) {
-//        Channel channel1 = SessionUtil.getChannel(shebei);
-//        Channel channel2 = ctx.channel();
-//        byte[] bytes = "我是服务端，我在向客户端发送数据".getBytes(Charset.forName("utf-8"));
-//        ByteBuf buffer = channel2.alloc().buffer();
-//        buffer.writeBytes(bytes);
         WebSocketFrame webSocketFrame = (WebSocketFrame) msg;
         String remoteIp = ctx.channel().remoteAddress().toString().split(":")[0];
         if (remoteIp.equals(qtIp)) {
@@ -81,7 +67,6 @@ public class QTCommandHandler extends SimpleChannelInboundHandler<Object> {
         } else {
             handlerWebSocketFrame(ctx, webSocketFrame, false, remoteIp);
         }
-//        channel2.writeAndFlush(new TextWebSocketFrame("我是服务器,我收到你的消息为:" + content));
     }
 
     /**
@@ -157,9 +142,8 @@ public class QTCommandHandler extends SimpleChannelInboundHandler<Object> {
             log.info("获取到的协议bt3：" + bt3.toString());
             // 连接消息服务器
             //final String broker = "192.168.1.226:9876";
-            final String broker = "192.168.199.128:9876";
             Client messageClient = new ClusterMqClient();
-            messageClient.connect(broker);
+            messageClient.connect(UpForwardListener.broker);
 
             String msgType = "";
 

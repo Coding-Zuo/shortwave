@@ -22,6 +22,30 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+<!--            <exclusions>-->
+<!--                <exclusion>-->
+<!--                    <artifactId>logback-classic</artifactId>-->
+<!--                    <groupId>ch.qos.logback</groupId>-->
+<!--                </exclusion>-->
+<!--            </exclusions>-->
+            <exclusions>
+<!--                <exclusion>-->
+<!--                    <groupId>org.junit.vintage</groupId>-->
+<!--                    <artifactId>junit-vintage-engine</artifactId>-->
+<!--                </exclusion>-->
+<!--                <exclusion>-->
+<!--                    <artifactId>logback-classic</artifactId>-->
+<!--                    <groupId>ch.qos.logback</groupId>-->
+<!--                </exclusion>-->
+<!--                <exclusion>-->
+<!--                    <groupId>org.slf4j</groupId>-->
+<!--                    <artifactId>slf4j-log4j12</artifactId>-->
+<!--                </exclusion>-->
+<!--                <exclusion>-->
+<!--                    <groupId>log4j</groupId>-->
+<!--                    <artifactId>log4j</artifactId>-->
+<!--                </exclusion>-->
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.msgpack</groupId>
@@ -33,12 +57,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.junit.vintage</groupId>
-                    <artifactId>junit-vintage-engine</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
@@ -100,6 +118,10 @@
             <version>1.2</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/src/main/resources/lib/commons-cli-1.2.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-codec</groupId>
@@ -318,12 +340,18 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/src/main/resources/lib/slf4j-api-1.7.7.jar</systemPath>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>snakeyaml</groupId>-->
+<!--            <artifactId>snakeyaml</artifactId>-->
+<!--            <version>1.19</version>-->
+<!--            <scope>system</scope>-->
+<!--            <systemPath>${project.basedir}/src/main/resources/lib/snakeyaml-1.19.jar</systemPath>-->
+<!--        </dependency>-->
         <dependency>
-            <groupId>snakeyaml</groupId>
+            <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
             <version>1.19</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/resources/lib/snakeyaml-1.19.jar</systemPath>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>message-client</groupId>
@@ -331,6 +359,12 @@
             <version>1.3.1.2</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/src/main/resources/lib/message-client-1.3.1.2.jar</systemPath>
+            <exclusions>
+                <exclusion>
+                    <artifactId>snakeyaml</artifactId>
+                    <groupId>org.yaml</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 
