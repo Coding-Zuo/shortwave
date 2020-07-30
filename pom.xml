@@ -28,7 +28,7 @@
 <!--                    <groupId>ch.qos.logback</groupId>-->
 <!--                </exclusion>-->
 <!--            </exclusions>-->
-            <exclusions>
+<!--            <exclusions>-->
 <!--                <exclusion>-->
 <!--                    <groupId>org.junit.vintage</groupId>-->
 <!--                    <artifactId>junit-vintage-engine</artifactId>-->
@@ -45,7 +45,7 @@
 <!--                    <groupId>log4j</groupId>-->
 <!--                    <artifactId>log4j</artifactId>-->
 <!--                </exclusion>-->
-            </exclusions>
+<!--            </exclusions>-->
         </dependency>
         <dependency>
             <groupId>org.msgpack</groupId>

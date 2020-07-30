@@ -29,7 +29,7 @@ import java.util.*;
 @ChannelHandler.Sharable
 public class QTCommandHandler extends SimpleChannelInboundHandler<Object> {
 
-    public final String qtIp = "/192.168.31.166";
+    public final String qtIp = "/192.168.1.3";
     public static final QTCommandHandler INSTANCE = new QTCommandHandler();
     Map<String, String> shebeiMap = new HashMap<String, String>() {{
         put("设备1", "/192.168.31.189");
@@ -123,89 +123,108 @@ public class QTCommandHandler extends SimpleChannelInboundHandler<Object> {
                 } else if (i == 0 && b == 2) {
                     toArmFlag = "2";
                     //第一个字段是2（设备2）
-                } else if (i == 1 && b == 1){
+                }
+
+                if (i == 1 && b == 1) {
                     //第二个字段是1
                     toArmFlag = toArmFlag + "1";
-                } else if(toArmFlag.length() == 2 && toArmFlag.substring(1,2).equals("1")){
-                    //第二个字段必须是1，并且字符串的长度必须是2
+                } else if (i == 1 && b == 2) {
                     toArmFlag = toArmFlag + "2";
-                    if (i == 2 && b == 0){
-                        //第三个字段是0
-                        toArmFlag = toArmFlag + "0";
-                    } else if (i == 2 && b == 1){
-                        //第三个字段是1
-                        toArmFlag = toArmFlag + "1";
-                    }
+                } else if (i == 1 && b == 3) {
+                    toArmFlag = toArmFlag + "3";
+                } else if (i == 1 && b == 0) {
+                    toArmFlag = toArmFlag + "0";
                 }
+
+                if (i == 2 && b == 0) {
+                    toArmFlag = toArmFlag + "0";
+                }
+                else if (i == 2) {
+                    toArmFlag = toArmFlag + "1";
+                }
+//                if(toArmFlag.length() == 2 && toArmFlag.substring(1,2).equals("1")){
+//                    //第二个字段必须是1，并且字符串的长度必须是2
+////                    toArmFlag = toArmFlag + "2";
+//                    if (i == 2 && b == 0){
+//                        //第三个字段是0
+//                        toArmFlag = toArmFlag + "0";
+//                    } else if (i == 2 && b == 1){
+//                        //第三个字段是1
+//                        toArmFlag = toArmFlag + "1";
+//                    }
+//                }else if(toArmFlag.length() == 2){
+//                    toArmFlag = toArmFlag + "1";
+//                }
                 bt3[i] = b;
             }
-            log.info("获取到的协议bt3：" + bt3.toString());
+            log.info("获取到的协议bt3：" + bt3);
             // 连接消息服务器
             //final String broker = "192.168.1.226:9876";
             Client messageClient = new ClusterMqClient();
             messageClient.connect(UpForwardListener.broker);
 
             String msgType = "";
+            log.info("获取到的协议toArmFlag：" + toArmFlag);
 
-            if (toArmFlag.substring(0, 1).equals("1")){
+            if (toArmFlag.substring(0, 1).equals("1")) {
                 //设备1
                 log.info("设备1");
-                if (toArmFlag.substring(1, 2).equals("0")){
+                if (toArmFlag.substring(1, 2).equals("0")) {
                     //停止
                     //设备1停止：2000
                     msgType = "2000";
                     log.info("配置：2000");
-                } else if (toArmFlag.substring(1, 2).equals("1")){
+                } else if (toArmFlag.substring(1, 2).equals("1")) {
                     //全景数据（启动）
-                    if (toArmFlag.substring(2, 3).equals("0")){
+                    if (toArmFlag.substring(2, 3).equals("0")) {
                         //如果是全景数据，还需要判断第三位是信号（0）还是噪声（1）
                         //设备1启动信号：2100
                         msgType = "2100";
                         log.info("配置：2100");
-                    } else if(toArmFlag.substring(2, 3).equals("1")){
+                    } else if (toArmFlag.substring(2, 3).equals("1")) {
                         //如果是全景数据，还需要判断第三位是信号（0）还是噪声（1）
                         //设备1启动噪声：2101
                         msgType = "2101";
                         log.info("配置：2101");
                     }
-                } else if(toArmFlag.substring(1, 2).equals("2")){
+                } else if (toArmFlag.substring(1, 2).equals("2")) {
                     //自动侦测
                     //设备1自动侦测：2200
                     msgType = "2200";
                     log.info("配置：2200");
-                } else if(toArmFlag.substring(1, 2).equals("3")){
+                } else if (toArmFlag.substring(1, 2).equals("3")) {
                     //定位信息
                     //设备1定位信息：2300
                     msgType = "2300";
                     log.info("配置：2300");
                 }
-            } else if (toArmFlag.substring(0, 1).equals("2")){
+            } else if (toArmFlag.substring(0, 1).equals("2")) {
                 //设备2
                 log.info("设备2");
-                if (toArmFlag.substring(1, 2).equals("0")){
+                if (toArmFlag.substring(1, 2).equals("0")) {
                     //停止
                     //设备2停止：2010
                     msgType = "2010";
                     log.info("配置：2010");
-                } else if (toArmFlag.substring(1, 2).equals("1")){
+                } else if (toArmFlag.substring(1, 2).equals("1")) {
                     //全景数据（启动）
-                    if (toArmFlag.substring(2, 3).equals("0")){
+                    if (toArmFlag.substring(2, 3).equals("0")) {
                         //如果是全景数据，还需要判断第三位是信号（0）还是噪声（1）
                         //设备2启动信号：2110
                         msgType = "2110";
                         log.info("配置：2110");
-                    } else if(toArmFlag.substring(2, 3).equals("1")){
+                    } else if (toArmFlag.substring(2, 3).equals("1")) {
                         //如果是全景数据，还需要判断第三位是信号（0）还是噪声（1）
                         //设备2启动噪声：2111
                         msgType = "2111";
                         log.info("配置：2111");
                     }
-                } else if(toArmFlag.substring(1, 2).equals("2")){
+                } else if (toArmFlag.substring(1, 2).equals("2")) {
                     //自动侦测
                     //设备2自动侦测：2210
                     msgType = "2210";
                     log.info("配置：2210");
-                } else if(toArmFlag.substring(1, 2).equals("3")){
+                } else if (toArmFlag.substring(1, 2).equals("3")) {
                     //定位信息
                     //设备2定位信息：2310
                     msgType = "2310";
@@ -223,8 +242,7 @@ public class QTCommandHandler extends SimpleChannelInboundHandler<Object> {
             log.info("发送数据");
 
 
-
-            Channel channel = SessionUtil.getChannel(qtIp);
+//            Channel channel = SessionUtil.getChannel(qtIp);
 //            if (toArmFlag == 0) {//arm 传给 qt
 //                channel = SessionUtil.getChannel(qtIp);
 //            } else if (toArmFlag == 1) { //qt给arm1
@@ -234,15 +252,15 @@ public class QTCommandHandler extends SimpleChannelInboundHandler<Object> {
 //                String armIp = shebeiMap.get("设备2");
 //                channel = SessionUtil.getChannel(armIp);
 //            }
-            content.markReaderIndex();
+//            content.markReaderIndex();
 //            int flag = content.readInt();
 //            log.info("标志位:[{}]", flag);
-            content.resetReaderIndex();
-
-            ByteBuf byteBuf = Unpooled.directBuffer(binaryWebSocketFrame.content().capacity());
-            byteBuf.writeBytes(binaryWebSocketFrame.content());
-
-            channel.writeAndFlush(new BinaryWebSocketFrame(byteBuf));
+//            content.resetReaderIndex();
+//
+//            ByteBuf byteBuf = Unpooled.directBuffer(binaryWebSocketFrame.content().capacity());
+//            byteBuf.writeBytes(binaryWebSocketFrame.content());
+//
+//            channel.writeAndFlush(new BinaryWebSocketFrame(byteBuf));
 
 //            log.info("├ [二进制数据]:{}", content);
 //            final int length = content.readableBytes();

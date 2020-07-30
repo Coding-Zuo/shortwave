@@ -28,13 +28,14 @@ import java.util.Date;
 @Component
 public class UpForwardListener {
 
-    public final static String broker = "127.0.0.1:9876";
+    public final static String broker = "192.168.1.100:9876";
+//    public final static String broker = "127.0.0.1:9876";
 
 
     public void start() throws Exception {
         log.info("SDK上传监听启动");
-        QTCommandHandler qtCommandHandler = new QTCommandHandler();
-        Channel channel = SessionUtil.getChannel(qtCommandHandler.qtIp);
+
+
         Client messageClient = new ClusterMqClient();
         messageClient.connect(broker);
 
@@ -51,6 +52,8 @@ public class UpForwardListener {
                     @Override
                     public void messageReceive(UserMsg userMsg) {
                         //将msg提取出来以备后续转发使用
+                        QTCommandHandler qtCommandHandler = new QTCommandHandler();
+                        Channel channel = SessionUtil.getChannel(qtCommandHandler.qtIp);
                         String msg = new String(userMsg.getBody().getMsgBody());
                         log.info("2010_3000:" + msg.getBytes());
                         ByteBuf byteBuf = Unpooled.directBuffer(msg.length());
@@ -64,6 +67,8 @@ public class UpForwardListener {
                     @Override
                     public void messageReceive(UserMsg userMsg) {
                         //将msg提取出来以备后续转发使用
+                        QTCommandHandler qtCommandHandler = new QTCommandHandler();
+                        Channel channel = SessionUtil.getChannel(qtCommandHandler.qtIp);
                         String msg = new String(userMsg.getBody().getMsgBody());
                         log.info("2010_3200:" + msg);
                         channel.writeAndFlush(new TextWebSocketFrame(msg));
@@ -75,6 +80,8 @@ public class UpForwardListener {
                     @Override
                     public void messageReceive(UserMsg userMsg) {
                         //将msg提取出来以备后续转发使用
+                        QTCommandHandler qtCommandHandler = new QTCommandHandler();
+                        Channel channel = SessionUtil.getChannel(qtCommandHandler.qtIp);
                         String msg = new String(userMsg.getBody().getMsgBody());
                         log.info("2010_3300:" + msg);
                         channel.writeAndFlush(new TextWebSocketFrame(msg));
@@ -86,6 +93,8 @@ public class UpForwardListener {
                     @Override
                     public void messageReceive(UserMsg userMsg) {
                         //将msg提取出来以备后续转发使用
+                        QTCommandHandler qtCommandHandler = new QTCommandHandler();
+                        Channel channel = SessionUtil.getChannel(qtCommandHandler.qtIp);
                         String msg = new String(userMsg.getBody().getMsgBody());
                         log.info("2010_3010:" + msg.getBytes());
                         ByteBuf byteBuf = Unpooled.directBuffer(msg.length());
@@ -99,6 +108,8 @@ public class UpForwardListener {
                     @Override
                     public void messageReceive(UserMsg userMsg) {
                         //将msg提取出来以备后续转发使用
+                        QTCommandHandler qtCommandHandler = new QTCommandHandler();
+                        Channel channel = SessionUtil.getChannel(qtCommandHandler.qtIp);
                         String msg = new String(userMsg.getBody().getMsgBody());
                         log.info("2010_3210:" + msg);
                         channel.writeAndFlush(new TextWebSocketFrame(msg));
@@ -110,6 +121,8 @@ public class UpForwardListener {
                     @Override
                     public void messageReceive(UserMsg userMsg) {
                         //将msg提取出来以备后续转发使用
+                        QTCommandHandler qtCommandHandler = new QTCommandHandler();
+                        Channel channel = SessionUtil.getChannel(qtCommandHandler.qtIp);
                         String msg = new String(userMsg.getBody().getMsgBody());
                         log.info("2010_3310:" + msg);
                         channel.writeAndFlush(new TextWebSocketFrame(msg));
